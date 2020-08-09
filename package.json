@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Server powering Mixerboard client applications.",
   "scripts": {
-    "dev": "nodemon --exec ts-node src --watch src",
+    "dev": "nodemon ./src/index.ts",
     "build": "rimraf dist && tsc",
     "start": "node dist",
     "test": "jest --watch",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mixerboard/server#readme",
   "devDependencies": {
+    "@types/express": "^4.17.7",
     "@types/jest": "^26.0.9",
     "@types/node": "^14.0.27",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
@@ -31,5 +32,11 @@
     "ts-jest": "^26.1.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@types/uuid": "^8.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "uuid": "^8.3.0"
   }
 }
