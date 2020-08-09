@@ -4,9 +4,9 @@ import Track from "./Track";
 class Playlist {
   readonly id: string;
   readonly name: string;
-  private tracks: Track[];
+  readonly tracks: Track[];
 
-  constructor(name: string, tracks: Track[]) {
+  constructor(name: string, tracks: Track[] = []) {
     this.id = uuid();
     this.name = name;
     this.tracks = tracks;

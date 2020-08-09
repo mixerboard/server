@@ -5,11 +5,15 @@ import Playlist from "./Playlist";
 
 class Library {
   readonly id: string;
-  private tracks: Track[];
-  private albums: Album[];
-  private playlists: Playlist[];
+  readonly tracks: Track[];
+  readonly albums: Album[];
+  readonly playlists: Playlist[];
 
-  constructor(tracks: Track[], albums: Album[], playlists: Playlist[]) {
+  constructor(
+    tracks: Track[] = [],
+    albums: Album[] = [],
+    playlists: Playlist[] = []
+  ) {
     this.id = uuid();
     this.tracks = tracks;
     this.albums = albums;
