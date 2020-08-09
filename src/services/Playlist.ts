@@ -1,14 +1,9 @@
-import { v4 as uuid } from "uuid";
 import Track from "./Track";
+import Item from "./Item";
 
-class Playlist {
-  readonly id: string;
-  readonly name: string;
-  readonly tracks: Track[];
-
-  constructor(name: string, tracks: Track[] = []) {
-    this.id = uuid();
-    this.name = name;
+class Playlist extends Item {
+  constructor(name: string, readonly tracks: Track[] = []) {
+    super(name);
     this.tracks = tracks;
   }
 

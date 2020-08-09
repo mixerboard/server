@@ -1,15 +1,9 @@
-import { v4 as uuid } from "uuid";
+import Item from "./Item";
 
-class Album {
-  readonly id: string;
-  readonly name: string;
-  readonly artist: string;
-
-  constructor(name: string, artist: string) {
-    this.id = uuid();
-    this.name = name;
+class Album extends Item {
+  constructor(name: string, readonly artist: string) {
+    super(name);
     this.artist = artist;
   }
 }
-
 export default Album;

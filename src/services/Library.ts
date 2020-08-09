@@ -1,20 +1,13 @@
-import { v4 as uuid } from "uuid";
 import Track from "./Track";
 import Album from "./Album";
 import Playlist from "./Playlist";
 
 class Library {
-  readonly id: string;
-  readonly tracks: Track[];
-  readonly albums: Album[];
-  readonly playlists: Playlist[];
-
   constructor(
-    tracks: Track[] = [],
-    albums: Album[] = [],
-    playlists: Playlist[] = []
+    readonly tracks: Track[] = [],
+    readonly albums: Album[] = [],
+    readonly playlists: Playlist[] = []
   ) {
-    this.id = uuid();
     this.tracks = tracks;
     this.albums = albums;
     this.playlists = playlists;
