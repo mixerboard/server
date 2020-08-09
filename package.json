@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Server powering Mixerboard client applications.",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/server.ts --watch src",
+    "dev": "nodemon --exec ts-node src --watch src",
     "build": "rimraf dist && tsc",
-    "start": "node dist/server.js",
-    "test": "jest --watch --passWithNoTests",
-    "coverage": "jest --coverage --passWithNoTests"
+    "start": "node dist",
+    "test": "jest --watch",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
