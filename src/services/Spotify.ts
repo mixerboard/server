@@ -54,7 +54,6 @@ class Spotify extends MusicService {
   }
 
   pushLibrary(library: Library): UploadResult {
-    console.log(library);
     return new UploadResult();
   }
 }
