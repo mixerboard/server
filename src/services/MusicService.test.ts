@@ -2,8 +2,10 @@ import MusicService from "./MusicService";
 import Library from "./Library";
 import UploadResult from "./UploadResult";
 
-describe("MusicService", () => {
+describe("music service", () => {
   it("constructs properties in concrete class", () => {
+    expect.assertions(2);
+
     class ConcreteClass extends MusicService {
       constructor() {
         super();
@@ -19,7 +21,9 @@ describe("MusicService", () => {
     }
     const concreteClassInstance = new ConcreteClass();
 
-    expect(concreteClassInstance.fetchLibrary()).toEqual(new Library());
-    expect(concreteClassInstance.uploadLibrary()).toEqual(new UploadResult());
+    expect(concreteClassInstance.fetchLibrary()).toStrictEqual(new Library());
+    expect(concreteClassInstance.uploadLibrary()).toStrictEqual(
+      new UploadResult()
+    );
   });
 });

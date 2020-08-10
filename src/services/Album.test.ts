@@ -1,7 +1,9 @@
 import Album from "./Album";
 
-describe("Album", () => {
+describe("album", () => {
   it("constructs", () => {
+    expect.assertions(3);
+
     const album = new Album("name", "artist");
 
     expect(album).toHaveProperty("id");

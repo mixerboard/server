@@ -4,8 +4,10 @@ import Track from "./Track";
 import Album from "./Album";
 import Playlist from "./Playlist";
 
-describe("UploadResult", () => {
+describe("upload-result", () => {
   it("constructs", () => {
+    expect.assertions(2);
+
     const uploaded = new Library(
       [new Track("name", "artist")],
       [new Album("name", "artist")],
@@ -23,9 +25,11 @@ describe("UploadResult", () => {
   });
 
   it("constructs with defaults", () => {
+    expect.assertions(2);
+
     const uploadResult = new UploadResult();
 
-    expect(uploadResult.uploaded).toEqual(new Library());
-    expect(uploadResult.failed).toEqual(new Library());
+    expect(uploadResult.uploaded).toStrictEqual(new Library());
+    expect(uploadResult.failed).toStrictEqual(new Library());
   });
 });

@@ -1,8 +1,13 @@
+jest.mock("superagent");
+
+import superagent from "superagent";
 import Spotify from "./Spotify";
 import normalizeUrl from "normalize-url";
 
-describe("Spotify", () => {
+describe("spotify", () => {
   it("constructs", () => {
+    expect.assertions(3);
+
     const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
 
     expect(spotify).toHaveProperty("clientId");
@@ -11,6 +16,8 @@ describe("Spotify", () => {
   });
 
   it("gets request authorization url", () => {
+    expect.assertions(1);
+
     const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
     const requestAuthorizationUrl = spotify.getRequestAuthorizationUrl();
     const expectedRequestAuthorizationUrl =
@@ -22,21 +29,17 @@ describe("Spotify", () => {
   });
 
   it("gets tokens", async () => {
-    // TEST INCOMPLETE. Mock API call to fix.
-    const spotify = new Spotify(
-      "3e009e6f91a64519a52dd55aa6e9aa08",
-      "6d65886a1abb448ebb3e88f46101df96",
-      "https://www.google.com"
-    );
+    expect.assertions(1);
 
-    try {
-      const res = spotify.getTokens(
-        "AQD6RO94HHKr91ILXPemfnm1UrgS06zZm02dYncDsTVrpy0QXqle9PUHRPnRn4w7NJAqdH76LimNzbvdPShBKTqD0xihIP9J4TGr4Xnur12UdY4a0OwuXztlcOyxVSMXkRM9zaU3KatqGfTY3eN96EIQi0aC9f2Nsa4"
-      );
-      console.log(await res);
-    } catch (e) {
-      console.log(e);
-    }
+    const mockResponse = {
+      body: { access_token: "accessToken", refresh_token: "refreshToken" },
+    };
+    (superagent.post as jest.Mock).mockReturnValueOnce(mockResponse);
+
+    const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
+    const code = "code";
+
+    spotify.getTokens(code);
 
     expect(1).toBe(1);
   });

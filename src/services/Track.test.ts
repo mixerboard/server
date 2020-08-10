@@ -1,7 +1,9 @@
 import Track from "./Track";
 
-describe("Track", () => {
+describe("track", () => {
   it("constructs", () => {
+    expect.assertions(3);
+
     const track = new Track("name", "artist");
 
     expect(track).toHaveProperty("id");

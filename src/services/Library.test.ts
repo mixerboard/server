@@ -3,19 +3,23 @@ import Track from "./Track";
 import Album from "./Album";
 import Playlist from "./Playlist";
 
-describe("Library", () => {
+describe("library", () => {
   it("constructs", () => {
+    expect.assertions(3);
+
     const tracks = [new Track("name", "artist")];
     const albums = [new Album("name", "artist")];
     const playlists = [new Playlist("name")];
     const library = new Library(tracks, albums, playlists);
 
-    expect(library.tracks).toEqual(tracks);
-    expect(library.albums).toEqual(albums);
-    expect(library.playlists).toEqual(playlists);
+    expect(library.tracks).toStrictEqual(tracks);
+    expect(library.albums).toStrictEqual(albums);
+    expect(library.playlists).toStrictEqual(playlists);
   });
 
   it("adds new track", () => {
+    expect.assertions(1);
+
     const library = new Library();
     const newTrack = new Track("name", "artist");
     library.addTrack(newTrack);
@@ -24,6 +28,8 @@ describe("Library", () => {
   });
 
   it("adds new album", () => {
+    expect.assertions(1);
+
     const library = new Library();
     const newAlbum = new Album("name", "artist");
     library.addAlbum(newAlbum);
@@ -32,6 +38,8 @@ describe("Library", () => {
   });
 
   it("adds new playlist", () => {
+    expect.assertions(1);
+
     const library = new Library();
     const newPlaylist = new Playlist("name");
     library.addPlaylist(newPlaylist);

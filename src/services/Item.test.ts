@@ -1,7 +1,9 @@
 import Item from "./Item";
 
-describe("Item", () => {
+describe("item", () => {
   it("constructs", () => {
+    expect.assertions(2);
+
     const item = new Item("name");
 
     expect(item).toHaveProperty("id");
