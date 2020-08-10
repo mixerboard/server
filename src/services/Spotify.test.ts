@@ -13,37 +13,21 @@ describe("Spotify", () => {
   it("gets request authorization url", () => {
     const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
     const requestAuthorizationUrl = spotify.getRequestAuthorizationUrl();
+    const expectedRequestAuthorizationUrl =
+      "https://accounts.spotify.com/authorize?response_type=code&client_id=clientId&redirect_uri=redirectUri";
 
-    const expectedRequestAuthorizationUrl = new URL(
-      "https://accounts.spotify.com/authorize"
-    );
-    expectedRequestAuthorizationUrl.searchParams.set("response_type", "code");
-    expectedRequestAuthorizationUrl.searchParams.set("client_id", "clientId");
-    expectedRequestAuthorizationUrl.searchParams.set(
-      "redirect_uri",
-      "redirectUri"
-    );
-
-    const normalizedRequestAuthorizationUrl = normalizeUrl(
-      requestAuthorizationUrl.toString()
-    );
-    const normalizedExpectedRequestAuthorizationUrl = normalizeUrl(
-      expectedRequestAuthorizationUrl.toString()
-    );
-
-    expect(normalizedRequestAuthorizationUrl).toBe(
-      normalizedExpectedRequestAuthorizationUrl
+    expect(normalizeUrl(requestAuthorizationUrl.toString())).toBe(
+      normalizeUrl(expectedRequestAuthorizationUrl)
     );
   });
 
   it("gets tokens", async () => {
+    // TEST INCOMPLETE. Mock API call to fix.
     const spotify = new Spotify(
       "3e009e6f91a64519a52dd55aa6e9aa08",
       "6d65886a1abb448ebb3e88f46101df96",
       "https://www.google.com"
     );
-
-    console.log(spotify.getRequestAuthorizationUrl());
 
     try {
       const res = spotify.getTokens(
