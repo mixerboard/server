@@ -1,18 +1,22 @@
-jest.mock("superagent");
-
-import superagent from "superagent";
 import Spotify from "./Spotify";
 import normalizeUrl from "normalize-url";
 
 describe("spotify", () => {
   it("constructs", () => {
-    expect.assertions(3);
+    expect.assertions(7);
 
     const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
 
+    // Properties
     expect(spotify).toHaveProperty("clientId");
     expect(spotify).toHaveProperty("clientSecret");
     expect(spotify).toHaveProperty("redirectUri");
+
+    // Methods
+    expect(spotify).toHaveProperty("getRequestAuthorizationUrl");
+    expect(spotify).toHaveProperty("getTokens");
+    expect(spotify).toHaveProperty("pullLibrary");
+    expect(spotify).toHaveProperty("pushLibrary");
   });
 
   it("gets request authorization url", () => {
@@ -26,21 +30,5 @@ describe("spotify", () => {
     expect(normalizeUrl(requestAuthorizationUrl.toString())).toBe(
       normalizeUrl(expectedRequestAuthorizationUrl)
     );
-  });
-
-  it("gets tokens", async () => {
-    expect.assertions(1);
-
-    const mockResponse = {
-      body: { access_token: "accessToken", refresh_token: "refreshToken" },
-    };
-    (superagent.post as jest.Mock).mockReturnValueOnce(mockResponse);
-
-    const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
-    const code = "code";
-
-    spotify.getTokens(code);
-
-    expect(1).toBe(1);
   });
 });

@@ -28,9 +28,13 @@ class Spotify extends MusicService {
 
   async getTokens(
     code: string
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; expiresIn: string }> {
     const {
-      body: { access_token: accessToken, refresh_token: refreshToken },
+      body: {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expires_in: expiresIn,
+      },
     } = await superagent
       .post("https://accounts.spotify.com/api/token")
       .type("form")
@@ -42,14 +46,14 @@ class Spotify extends MusicService {
         code,
       });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, expiresIn };
   }
 
-  fetchLibrary(): Library {
+  pullLibrary(): Library {
     return new Library();
   }
 
-  uploadLibrary(library: Library): UploadResult {
+  pushLibrary(library: Library): UploadResult {
     console.log(library);
     return new UploadResult();
   }

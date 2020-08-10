@@ -11,18 +11,18 @@ describe("music service", () => {
         super();
       }
 
-      fetchLibrary() {
+      pullLibrary() {
         return new Library();
       }
 
-      uploadLibrary() {
+      pushLibrary() {
         return new UploadResult();
       }
     }
     const concreteClassInstance = new ConcreteClass();
 
-    expect(concreteClassInstance.fetchLibrary()).toStrictEqual(new Library());
-    expect(concreteClassInstance.uploadLibrary()).toStrictEqual(
+    expect(concreteClassInstance.pullLibrary()).toStrictEqual(new Library());
+    expect(concreteClassInstance.pushLibrary()).toStrictEqual(
       new UploadResult()
     );
   });
