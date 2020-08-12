@@ -47,11 +47,11 @@ class Spotify extends MusicService {
     return { accessToken, refreshToken, expiresIn };
   }
 
-  pullLibrary(): Library {
+  async pullLibrary(): Promise<Library> {
     return new Library();
   }
 
-  pushLibrary(library: Library): UploadResult {
+  async pushLibrary(library: Library): Promise<UploadResult> {
     return new UploadResult();
   }
 }

@@ -27,4 +27,18 @@ router.post("/tokens", async (req, res) => {
   }
 });
 
+router.get("/library", async (req, res) => {
+  if (!req.headers.authorization) {
+    res.sendStatus(401);
+  }
+
+  const library = await spotify.pullLibrary();
+
+  res.send({ library });
+});
+
+router.patch("/library", async (req, res) => {
+  res.send("also working!");
+});
+
 export default router;
