@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Router } from "express";
 import Spotify from "../../../services/Spotify";
 
@@ -10,7 +11,20 @@ const spotify = new Spotify(
 );
 
 router.get("/request-auth-url", (_req, res) => {
-  res.send(spotify.getRequestAuthUrl());
+  res.send({ requestAuthUrl: spotify.getRequestAuthUrl() });
+});
+
+router.post("/tokens", async (req, res) => {
+  if (!req.body.code) {
+    res.status(400).send("Code not found in request body");
+  }
+
+  try {
+    const tokens = await spotify.getTokens(req.body.code);
+    res.send(tokens);
+  } catch (e) {
+    res.sendStatus(400);
+  }
 });
 
 export default router;
