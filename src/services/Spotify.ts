@@ -15,15 +15,13 @@ class Spotify extends MusicService {
     this.redirectUri = redirectUri;
   }
 
-  getRequestAuthorizationUrl(): URL {
-    const requestAuthorizationUrl = new URL(
-      "https://accounts.spotify.com/authorize"
-    );
-    requestAuthorizationUrl.searchParams.set("client_id", this.clientId);
-    requestAuthorizationUrl.searchParams.set("response_type", "code");
-    requestAuthorizationUrl.searchParams.set("redirect_uri", this.redirectUri);
+  getRequestAuthUrl(): URL {
+    const requestAuthUrl = new URL("https://accounts.spotify.com/authorize");
+    requestAuthUrl.searchParams.set("client_id", this.clientId);
+    requestAuthUrl.searchParams.set("response_type", "code");
+    requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
 
-    return requestAuthorizationUrl;
+    return requestAuthUrl;
   }
 
   async getTokens(
