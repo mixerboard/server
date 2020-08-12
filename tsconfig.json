@@ -3,7 +3,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "esModuleInterop": true,
-    "baseUrl": "./src"
+    "esModuleInterop": true
   }
 }

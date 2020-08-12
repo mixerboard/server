@@ -1,9 +1,9 @@
 import { Router } from "express";
-import api from "./api";
+import apiRoutes from "./api";
 
 const router = Router();
 
-router.use("/api", api);
+router.use("/api", apiRoutes);
 
 router.head("/status", (_req, res) => {
   res.sendStatus(200);
