@@ -85,28 +85,21 @@ class Spotify {
     const parsePlaylist = async ({ name, tracks: { href } }) =>
       new Playlist(name, (await recurseApiRequest(href)).map(parseTrack));
 
-    const getTracks = async () =>
-      (await recurseApiRequest("https://api.spotify.com/v1/me/tracks")).map(
-        parseTrack
-      );
+    const tracks = (
+      await recurseApiRequest("https://api.spotify.com/v1/me/tracks")
+    ).map(parseTrack);
 
-    const getAlbums = async () =>
-      (await recurseApiRequest("https://api.spotify.com/v1/me/albums")).map(
-        parseAlbum
-      );
+    const albums = (
+      await recurseApiRequest("https://api.spotify.com/v1/me/albums")
+    ).map(parseAlbum);
 
-    const getPlaylists = async () =>
-      Promise.all<Playlist>(
-        (
-          await recurseApiRequest("https://api.spotify.com/v1/me/playlists")
-        ).map(parsePlaylist)
-      );
-
-    return new Library(
-      await getTracks(),
-      await getAlbums(),
-      await getPlaylists()
+    const playlists = await Promise.all<Playlist>(
+      (await recurseApiRequest("https://api.spotify.com/v1/me/playlists")).map(
+        parsePlaylist
+      )
     );
+
+    return new Library(tracks, albums, playlists);
   }
 
   async pushLibrary(library: Library): Promise<UploadResult> {
