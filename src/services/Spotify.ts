@@ -1,15 +1,14 @@
 import superagent from "superagent";
-import MusicService from "./MusicService";
 import Library from "./Library";
 import UploadResult from "./UploadResult";
+import Track from "./Track";
 
-class Spotify extends MusicService {
+class Spotify {
   constructor(
     private clientId: string,
     private clientSecret: string,
     private redirectUri: string
   ) {
-    super();
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
@@ -20,6 +19,16 @@ class Spotify extends MusicService {
     requestAuthUrl.searchParams.set("client_id", this.clientId);
     requestAuthUrl.searchParams.set("response_type", "code");
     requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
+    requestAuthUrl.searchParams.set(
+      "scope",
+      [
+        "playlist-read-private",
+        "playlist-read-collaborative",
+        "playlist-modify-private",
+        "user-library-read",
+        "user-library-modify",
+      ].join(",")
+    );
 
     return requestAuthUrl;
   }
@@ -47,8 +56,40 @@ class Spotify extends MusicService {
     return { accessToken, refreshToken, expiresIn };
   }
 
-  async pullLibrary(): Promise<Library> {
-    return new Library();
+  async pullLibrary(authToken: string): Promise<Library> {
+    const getTracks = async () => {
+      const tracks = [];
+      let nextUrl = "https://api.spotify.com/v1/me/tracks";
+
+      while (nextUrl) {
+        const {
+          body: { items, next },
+        } = await superagent
+          .get(nextUrl)
+          .auth(authToken, { type: "bearer" })
+          .query({ limit: 50 });
+
+        tracks.push(...items);
+        nextUrl = next;
+        // TEMP!!
+        nextUrl = null;
+      }
+
+      return tracks.map(
+        ({ track: { name, artists } }) =>
+          new Track(
+            name,
+            artists.map((artist: Record<string, unknown>) => artist.name).join()
+          )
+      );
+    };
+
+    const library = new Library();
+    const tracks = await getTracks();
+
+    tracks.forEach((track) => library.addTrack(track));
+
+    return library;
   }
 
   async pushLibrary(library: Library): Promise<UploadResult> {
