@@ -67,7 +67,7 @@ class Spotify {
         .auth(authToken, { type: "bearer" })
         .query({ limit: 50 });
 
-      return [...items, ...(next ? await recurseApiRequest(next) : [])];
+      return [...items]; //, ...(next ? await recurseApiRequest(next) : [])];
     };
 
     const parseArtists = (artists: Record<string, unknown>[]) => {
