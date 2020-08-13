@@ -32,7 +32,7 @@ router.get("/library", async (req, res) => {
     res.sendStatus(401);
   }
 
-  const library = await spotify.pullLibrary();
+  const library = await spotify.pullLibrary(req.headers.authorization);
 
   res.send({ library });
 });

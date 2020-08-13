@@ -1,15 +1,16 @@
 import superagent from "superagent";
-import MusicService from "./MusicService";
 import Library from "./Library";
 import UploadResult from "./UploadResult";
+import Track from "./Track";
+import Album from "./Album";
+import Playlist from "./Playlist";
 
-class Spotify extends MusicService {
+class Spotify {
   constructor(
     private clientId: string,
     private clientSecret: string,
     private redirectUri: string
   ) {
-    super();
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
@@ -20,6 +21,16 @@ class Spotify extends MusicService {
     requestAuthUrl.searchParams.set("client_id", this.clientId);
     requestAuthUrl.searchParams.set("response_type", "code");
     requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
+    requestAuthUrl.searchParams.set(
+      "scope",
+      [
+        "playlist-read-private",
+        "playlist-read-collaborative",
+        "playlist-modify-private",
+        "user-library-read",
+        "user-library-modify",
+      ].join(",")
+    );
 
     return requestAuthUrl;
   }
@@ -47,8 +58,55 @@ class Spotify extends MusicService {
     return { accessToken, refreshToken, expiresIn };
   }
 
-  async pullLibrary(): Promise<Library> {
-    return new Library();
+  async pullLibrary(authToken: string): Promise<Library> {
+    const recurseApiRequest = async (url: string) => {
+      const {
+        body: { items, next },
+      } = await superagent
+        .get(url)
+        .auth(authToken, { type: "bearer" })
+        .query({ limit: 50 });
+
+      return [...items]; //, ...(next ? await recurseApiRequest(next) : [])];
+    };
+
+    const parseArtists = (artists: Record<string, unknown>[]) => {
+      return artists
+        .map((artist: Record<string, unknown>) => artist.name)
+        .join();
+    };
+
+    const parseTrack = ({ track: { name, artists } }) =>
+      new Track(name, parseArtists(artists));
+
+    const parseAlbum = ({ album: { name, artists } }) =>
+      new Album(name, parseArtists(artists));
+
+    const parsePlaylist = async ({ name, tracks: { href } }) =>
+      new Playlist(name, (await recurseApiRequest(href)).map(parseTrack));
+
+    const getTracks = async () =>
+      (await recurseApiRequest("https://api.spotify.com/v1/me/tracks")).map(
+        parseTrack
+      );
+
+    const getAlbums = async () =>
+      (await recurseApiRequest("https://api.spotify.com/v1/me/albums")).map(
+        parseAlbum
+      );
+
+    const getPlaylists = async () =>
+      Promise.all<Playlist>(
+        (
+          await recurseApiRequest("https://api.spotify.com/v1/me/playlists")
+        ).map(parsePlaylist)
+      );
+
+    return new Library(
+      await getTracks(),
+      await getAlbums(),
+      await getPlaylists()
+    );
   }
 
   async pushLibrary(library: Library): Promise<UploadResult> {

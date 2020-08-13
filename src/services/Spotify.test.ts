@@ -22,11 +22,25 @@ describe("spotify", () => {
 
     const spotify = new Spotify("clientId", "clientSecret", "redirectUri");
     const requestAuthUrl = spotify.getRequestAuthUrl();
-    const expectedRequestAuthUrl =
-      "https://accounts.spotify.com/authorize?response_type=code&client_id=clientId&redirect_uri=redirectUri";
+    const expectedRequestAuthUrl = new URL(
+      "https://accounts.spotify.com/authorize"
+    );
+    expectedRequestAuthUrl.searchParams.set("client_id", "clientId");
+    expectedRequestAuthUrl.searchParams.set("response_type", "code");
+    expectedRequestAuthUrl.searchParams.set("redirect_uri", "redirectUri");
+    expectedRequestAuthUrl.searchParams.set(
+      "scope",
+      [
+        "playlist-read-private",
+        "playlist-read-collaborative",
+        "playlist-modify-private",
+        "user-library-read",
+        "user-library-modify",
+      ].join(",")
+    );
 
     expect(normalizeUrl(requestAuthUrl.toString())).toBe(
-      normalizeUrl(expectedRequestAuthUrl)
+      normalizeUrl(expectedRequestAuthUrl.toString())
     );
   });
 });
