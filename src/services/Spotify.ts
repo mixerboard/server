@@ -18,6 +18,7 @@ class Spotify {
 
   getRequestAuthUrl(): URL {
     const requestAuthUrl = new URL("https://accounts.spotify.com/authorize");
+
     requestAuthUrl.searchParams.set("client_id", this.clientId);
     requestAuthUrl.searchParams.set("response_type", "code");
     requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
