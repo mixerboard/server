@@ -1,14 +1,14 @@
-import UploadResult from "./UploadResult";
 import Library from "./Library";
 import Track from "./Track";
 import Album from "./Album";
 import Playlist from "./Playlist";
+import PushResult from "./PushResult";
 
 describe("upload-result", () => {
   it("constructs", () => {
     expect.assertions(2);
 
-    const uploaded = new Library(
+    const pushed = new Library(
       [new Track("name", "artist")],
       [new Album("name", "artist")],
       [new Playlist("name", [new Track("name", "artist")])]
@@ -18,18 +18,18 @@ describe("upload-result", () => {
       [new Album("name", "artist")],
       [new Playlist("name", [new Track("name", "artist")])]
     );
-    const uploadResult = new UploadResult(uploaded, failed);
+    const pushResult = new PushResult(pushed, failed);
 
-    expect(uploadResult.uploaded).toBe(uploaded);
-    expect(uploadResult.failed).toBe(failed);
+    expect(pushResult.pushed).toBe(pushed);
+    expect(pushResult.failed).toBe(failed);
   });
 
   it("constructs with defaults", () => {
     expect.assertions(2);
 
-    const uploadResult = new UploadResult();
+    const pushResult = new PushResult();
 
-    expect(uploadResult.uploaded).toStrictEqual(new Library());
-    expect(uploadResult.failed).toStrictEqual(new Library());
+    expect(pushResult.pushed).toStrictEqual(new Library());
+    expect(pushResult.failed).toStrictEqual(new Library());
   });
 });

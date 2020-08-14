@@ -1,9 +1,9 @@
 import superagent from "superagent";
 import Library from "./Library";
-import UploadResult from "./UploadResult";
 import Track from "./Track";
 import Album from "./Album";
 import Playlist from "./Playlist";
+import PushResult from "./PushResult";
 
 class Spotify {
   constructor(
@@ -107,8 +107,8 @@ class Spotify {
     return new Library(tracks, albums, playlists);
   }
 
-  async pushLibrary(library: Library): Promise<UploadResult> {
-    return new UploadResult();
+  async pushLibrary(library: Library): Promise<PushResult> {
+    return new PushResult();
   }
 }
 

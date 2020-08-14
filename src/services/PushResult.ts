@@ -1,13 +1,13 @@
 import Library from "./Library";
 
-class UploadResult {
+class PushResult {
   constructor(
-    public uploaded: Library = new Library(),
+    public pushed: Library = new Library(),
     public failed: Library = new Library()
   ) {
-    this.uploaded = uploaded;
+    this.pushed = pushed;
     this.failed = failed;
   }
 }
 
-export default UploadResult;
+export default PushResult;
