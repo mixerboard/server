@@ -10,31 +10,44 @@ const spotify = new Spotify(
   process.env.SPOTIFY_REDIRECT_URI
 );
 
-router.get("/request-auth-url", (_req, res) => {
-  res.send({ requestAuthUrl: spotify.getRequestAuthUrl() });
+router.get("/request-auth-url", (_req, res, next) => {
+  try {
+    const requestAuthUrl = spotify.getRequestAuthUrl();
+
+    res.send({ requestAuthUrl });
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.post("/tokens", async (req, res) => {
+router.post("/tokens", async (req, res, next) => {
   if (!req.body.code) {
-    res.status(400).send("Code not found in request body");
+    res.status(400).send("Authorization code required");
+    return;
   }
 
   try {
     const tokens = await spotify.getTokens(req.body.code);
+
     res.send(tokens);
   } catch (e) {
-    res.sendStatus(400);
+    next(e);
   }
 });
 
-router.get("/library", async (req, res) => {
+router.get("/library", async (req, res, next) => {
   if (!req.headers.authorization) {
-    res.sendStatus(401);
+    res.status(401).send("Unauthorized");
+    return;
   }
 
-  const library = await spotify.pullLibrary(req.headers.authorization);
+  try {
+    const library = await spotify.pullLibrary(req.headers.authorization);
 
-  res.send({ library });
+    res.send({ library });
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.patch("/library", async (req, res) => {
