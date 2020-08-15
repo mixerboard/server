@@ -107,7 +107,7 @@ class Spotify {
     return new Library(tracks, albums, playlists);
   }
 
-  async pushLibrary(library: Library): Promise<PushResult> {
+  async pushLibrary(authToken: string, library: Library): Promise<PushResult> {
     return new PushResult();
   }
 }

@@ -50,8 +50,28 @@ router.get("/library", async (req, res, next) => {
   }
 });
 
-router.patch("/library", async (req, res) => {
-  res.send("also working!");
+router.patch("/library", async (req, res, next) => {
+  if (!req.headers.authorization) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  if (!req.body.library) {
+    res.status(400).send("Library required");
+    return;
+  }
+
+  try {
+    const uploadResult = await spotify.pushLibrary(
+      req.headers.authorization,
+      req.body.library
+    );
+
+    res.send({ uploadResult });
+  } catch (e) {
+    next(e);
+  }
+  res.send({ uploadResult: "nice" });
 });
 
 export default router;
