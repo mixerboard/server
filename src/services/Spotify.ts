@@ -78,7 +78,7 @@ class Spotify {
     const parseArtists = (artists: Record<string, unknown>[]) => {
       return artists
         .map((artist: Record<string, unknown>) => artist.name)
-        .join();
+        .join(", ");
     };
 
     const parseTrack = ({ track: { name, artists } }) =>
@@ -90,21 +90,19 @@ class Spotify {
     const parsePlaylist = async ({ name, tracks: { href } }) =>
       new Playlist(name, (await recurseApiRequest(href)).map(parseTrack));
 
-    const tracks = (
-      await recurseApiRequest("https://api.spotify.com/v1/me/tracks")
-    ).map(parseTrack);
-
-    const albums = (
-      await recurseApiRequest("https://api.spotify.com/v1/me/albums")
-    ).map(parseAlbum);
-
-    const playlists = await Promise.all<Playlist>(
-      (await recurseApiRequest("https://api.spotify.com/v1/me/playlists")).map(
-        parsePlaylist
+    return new Library(
+      (await recurseApiRequest("https://api.spotify.com/v1/me/tracks")).map(
+        parseTrack
+      ),
+      (await recurseApiRequest("https://api.spotify.com/v1/me/albums")).map(
+        parseAlbum
+      ),
+      await Promise.all<Playlist>(
+        (
+          await recurseApiRequest("https://api.spotify.com/v1/me/playlists")
+        ).map(parsePlaylist)
       )
     );
-
-    return new Library(tracks, albums, playlists);
   }
 
   async pushLibrary(authToken: string, library: Library): Promise<PushResult> {
@@ -133,14 +131,35 @@ class Spotify {
       }
     };
 
+    const pushAlbum = async (album: Album) => {
+      try {
+        await superagent
+          .put("https://api.spotify.com/v1/me/albums")
+          .auth(authToken, { type: "bearer" })
+          .query({
+            ids: (await searchSpotify(`${album.name} ${album.artist}`, "album"))
+              .albums.items?.[0].id,
+          });
+
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
     const pushed = new Library();
     const failed = new Library();
 
-    // Push tracks
     for (const track of library.tracks) {
       (await pushTrack(track))
         ? pushed.addTrack(track)
         : failed.addTrack(track);
+    }
+
+    for (const album of library.albums) {
+      (await pushAlbum(album))
+        ? pushed.addAlbum(album)
+        : failed.addAlbum(album);
     }
 
     return new PushResult(pushed, failed);
