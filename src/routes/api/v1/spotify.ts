@@ -62,16 +62,15 @@ router.patch("/library", async (req, res, next) => {
   }
 
   try {
-    const uploadResult = await spotify.pushLibrary(
+    const pushResult = await spotify.pushLibrary(
       req.headers.authorization,
       req.body.library
     );
 
-    res.send({ uploadResult });
+    res.send({ pushResult });
   } catch (e) {
     next(e);
   }
-  res.send({ uploadResult: "nice" });
 });
 
 export default router;

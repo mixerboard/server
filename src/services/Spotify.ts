@@ -108,7 +108,42 @@ class Spotify {
   }
 
   async pushLibrary(authToken: string, library: Library): Promise<PushResult> {
-    return new PushResult();
+    const searchSpotify = async (query: string, type: string) => {
+      const { body } = await superagent
+        .get("https://api.spotify.com/v1/search")
+        .auth(authToken, { type: "bearer" })
+        .query({ q: query, type, limit: 1 });
+
+      return body;
+    };
+
+    const pushTrack = async (track: Track) => {
+      try {
+        await superagent
+          .put("https://api.spotify.com/v1/me/tracks")
+          .auth(authToken, { type: "bearer" })
+          .query({
+            ids: (await searchSpotify(`${track.name} ${track.artist}`, "track"))
+              .tracks.items?.[0].id,
+          });
+
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const pushed = new Library();
+    const failed = new Library();
+
+    // Push tracks
+    for (const track of library.tracks) {
+      (await pushTrack(track))
+        ? pushed.addTrack(track)
+        : failed.addTrack(track);
+    }
+
+    return new PushResult(pushed, failed);
   }
 }
 
