@@ -30,7 +30,7 @@ class Spotify {
         "playlist-modify-private",
         "user-library-read",
         "user-library-modify",
-      ].join(",")
+      ].join()
     );
 
     return requestAuthUrl;
