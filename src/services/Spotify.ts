@@ -18,20 +18,18 @@ class Spotify {
 
   getRequestAuthUrl(): URL {
     const requestAuthUrl = new URL("https://accounts.spotify.com/authorize");
+    const scopes = [
+      "playlist-read-private",
+      "playlist-read-collaborative",
+      "playlist-modify-private",
+      "user-library-read",
+      "user-library-modify",
+    ];
 
     requestAuthUrl.searchParams.set("client_id", this.clientId);
     requestAuthUrl.searchParams.set("response_type", "code");
     requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
-    requestAuthUrl.searchParams.set(
-      "scope",
-      [
-        "playlist-read-private",
-        "playlist-read-collaborative",
-        "playlist-modify-private",
-        "user-library-read",
-        "user-library-modify",
-      ].join(",")
-    );
+    requestAuthUrl.searchParams.set("scope", scopes.join(","));
 
     return requestAuthUrl;
   }
@@ -149,6 +147,53 @@ class Spotify {
       }
     };
 
+    const getUserProfile = async () => {
+      const { body } = await superagent
+        .get("https://api.spotify.com/v1/me")
+        .auth(authToken, { type: "bearer" });
+
+      return body;
+    };
+
+    const createNewPlaylist = async (name: string, userId: string) => {
+      const { body } = await superagent
+        .post(`https://api.spotify.com/v1/users/${userId}/playlists`)
+        .auth(authToken, { type: "bearer" })
+        .send({ name, public: false });
+
+      return body;
+    };
+
+    const addTrackToPlaylist = async (playlistId: string, trackUri: string) => {
+      await superagent
+        .post(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`)
+        .auth(authToken, { type: "bearer" })
+        .send({ uris: [trackUri] });
+    };
+
+    const pushPlaylist = async (playlist: Playlist) => {
+      try {
+        const { id: userId } = await getUserProfile();
+        const { id: playlistId } = await createNewPlaylist(
+          playlist.name,
+          userId
+        );
+
+        for (const track of playlist.tracks) {
+          const {
+            tracks: {
+              items: [{ uri: trackUri }],
+            },
+          } = await searchSpotify(`${track.name} ${track.artist}`, "track");
+
+          addTrackToPlaylist(playlistId, trackUri);
+        }
+      } catch (e) {
+        console.log(e);
+        return false;
+      }
+    };
+
     const pushed = new Library();
     const failed = new Library();
 
@@ -164,7 +209,11 @@ class Spotify {
         : failed.addAlbum(album);
     }
 
-    // TODO: Playlists
+    for (const playlist of library.playlists) {
+      (await pushPlaylist(playlist))
+        ? pushed.addPlaylist(playlist)
+        : failed.addPlaylist(playlist);
+    }
 
     return new PushResult(pushed, failed);
   }
