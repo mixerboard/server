@@ -21,28 +21,16 @@ router.get("/request-auth-url", (_req, res, next) => {
 });
 
 router.post("/tokens", async (req, res, next) => {
-  if (!req.body.code) {
-    res.status(400).send("Authorization code required");
+  if (!req.body.code && !req.body.refreshToken) {
+    res.status(400).send("Authorization code or refresh token required");
     return;
   }
 
   try {
-    const tokens = await spotify.getTokens(req.body.code);
-
-    res.send(tokens);
-  } catch (e) {
-    next(e);
-  }
-});
-
-router.post("/refresh-tokens", async (req, res, next) => {
-  if (!req.body.refreshToken) {
-    res.status(400).send("Refresh token required");
-    return;
-  }
-
-  try {
-    const tokens = await spotify.getTokens(null, req.body.refreshToken);
+    const tokens = await spotify.getTokens(
+      req.body.code,
+      req.body.refreshToken
+    );
 
     res.send(tokens);
   } catch (e) {
