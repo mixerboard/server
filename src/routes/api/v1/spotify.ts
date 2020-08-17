@@ -42,7 +42,7 @@ router.post("/refresh-tokens", async (req, res, next) => {
   }
 
   try {
-    const tokens = await spotify.refreshTokens(req.body.refreshToken);
+    const tokens = await spotify.getTokens(null, req.body.refreshToken);
 
     res.send(tokens);
   } catch (e) {

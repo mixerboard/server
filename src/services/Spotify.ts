@@ -37,30 +37,8 @@ class Spotify {
   }
 
   async getTokens(
-    code: string
-  ): Promise<{ accessToken: string; refreshToken: string; expiresIn: string }> {
-    const {
-      body: {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        expires_in: expiresIn,
-      },
-    } = await superagent
-      .post("https://accounts.spotify.com/api/token")
-      .type("form")
-      .send({
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        redirect_uri: this.redirectUri,
-        grant_type: "authorization_code",
-        code,
-      });
-
-    return { accessToken, refreshToken, expiresIn };
-  }
-
-  async refreshTokens(
-    refreshToken: string
+    code: string = null,
+    refreshToken: string = null
   ): Promise<{ accessToken: string; refreshToken: string; expiresIn: string }> {
     const {
       body: {
@@ -75,8 +53,9 @@ class Spotify {
         client_id: this.clientId,
         client_secret: this.clientSecret,
         redirect_uri: this.redirectUri,
-        grant_type: "refresh_token",
+        grant_type: code ? "authorization_code" : "refresh_token",
         refresh_token: refreshToken,
+        code,
       });
 
     return { accessToken, refreshToken: newRefreshToken, expiresIn };
