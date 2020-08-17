@@ -35,6 +35,21 @@ router.post("/tokens", async (req, res, next) => {
   }
 });
 
+router.post("/refresh-tokens", async (req, res, next) => {
+  if (!req.body.refreshToken) {
+    res.status(400).send("Refresh token required");
+    return;
+  }
+
+  try {
+    const tokens = await spotify.refreshTokens(req.body.refreshToken);
+
+    res.send(tokens);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.get("/library", async (req, res, next) => {
   if (!req.headers.authorization) {
     res.status(401).send("Unauthorized");

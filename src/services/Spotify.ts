@@ -59,6 +59,29 @@ class Spotify {
     return { accessToken, refreshToken, expiresIn };
   }
 
+  async refreshTokens(
+    refreshToken: string
+  ): Promise<{ accessToken: string; refreshToken: string; expiresIn: string }> {
+    const {
+      body: {
+        access_token: accessToken,
+        refresh_token: newRefreshToken,
+        expires_in: expiresIn,
+      },
+    } = await superagent
+      .post("https://accounts.spotify.com/api/token")
+      .type("form")
+      .send({
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        redirect_uri: this.redirectUri,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      });
+
+    return { accessToken, refreshToken: newRefreshToken, expiresIn };
+  }
+
   async pullLibrary(authToken: string): Promise<Library> {
     const recurseApiRequest = async (url: string) => {
       const {
@@ -161,6 +184,8 @@ class Spotify {
         ? pushed.addAlbum(album)
         : failed.addAlbum(album);
     }
+
+    // TODO: Playlists
 
     return new PushResult(pushed, failed);
   }
