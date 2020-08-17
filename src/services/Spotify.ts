@@ -188,8 +188,9 @@ class Spotify {
 
           addTrackToPlaylist(playlistId, trackUri);
         }
-      } catch (e) {
-        console.log(e);
+
+        return true;
+      } catch {
         return false;
       }
     };
