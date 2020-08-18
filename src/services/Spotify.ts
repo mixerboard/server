@@ -29,20 +29,7 @@ class Spotify {
     requestAuthUrl.searchParams.set("client_id", this.clientId);
     requestAuthUrl.searchParams.set("response_type", "code");
     requestAuthUrl.searchParams.set("redirect_uri", this.redirectUri);
-<<<<<<< HEAD
-    requestAuthUrl.searchParams.set(
-      "scope",
-      [
-        "playlist-read-private",
-        "playlist-read-collaborative",
-        "playlist-modify-private",
-        "user-library-read",
-        "user-library-modify",
-      ].join()
-    );
-=======
-    requestAuthUrl.searchParams.set("scope", scopes.join(","));
->>>>>>> development
+    requestAuthUrl.searchParams.set("scope", scopes.join());
 
     return requestAuthUrl;
   }
@@ -192,17 +179,27 @@ class Spotify {
           userId
         );
 
-        for (const track of playlist.tracks) {
-          const {
-            tracks: {
-              items: [{ uri: trackUri }],
-            },
-          } = await searchSpotify(`${track.name} ${track.artist}`, "track");
+        let trackFailed = false;
 
-          addTrackToPlaylist(playlistId, trackUri);
+        for (const track of playlist.tracks) {
+          try {
+            const {
+              tracks: {
+                items: [{ uri: trackUri }],
+              },
+            } = await searchSpotify(`${track.name} ${track.artist}`, "track");
+
+            addTrackToPlaylist(playlistId, trackUri);
+          } catch {
+            trackFailed = true;
+          }
         }
 
-        return true;
+        if (trackFailed) {
+          return false;
+        } else {
+          return true;
+        }
       } catch {
         return false;
       }
